@@ -45,4 +45,6 @@ from python_project_report_tool import git_tools
 if __name__ == '__main__':
     print("Performing tests in ", os.getcwd())
 
-    pprint(git_tools.count_commits_per_file())
+    history = git_tools.get_git_history()
+    pprint(history)
+    pprint(git_tools.get_file_history(history))
