@@ -51,6 +51,7 @@ Date:   {}
 def get_git_history(root_directory=None):
     if root_directory is None:
         root_directory = os.getcwd()
+    os.chdir(root_directory)
 
     # Run the git command to get commits per filename in a subprocess and get the results, decoded
     process = subprocess.Popen(['git', 'log', '--follow', '--name-only', root_directory], stdout=subprocess.PIPE)
@@ -76,7 +77,11 @@ def get_git_history(root_directory=None):
     return history
 
 
-def get_file_history(git_history):
+def get_file_history(git_history, root_directory=None):
+    if root_directory is None:
+        root_directory = os.getcwd()
+    os.chdir(root_directory)
+
     history_per_file = {}
 
     # For each commit in the history
@@ -96,12 +101,15 @@ def get_file_history(git_history):
             else:
                 history_per_file[file] = {
                     'file': file,
+                    'filename': file.split(os.sep)[-1],
+                    'path': os.sep.join(file.split(os.sep)[:-1]),
                     'credits': [commit['author']],
                     'author': commit['author'],
                     'maintainer': commit['author'],
                     'last_update': commit['date'],
                     'creation': commit['date'],
                     'commits': 1,
+                    'current': (os.path.exists(file) == 1)
                 }
 
     return history_per_file
