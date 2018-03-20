@@ -52,15 +52,37 @@ if __name__ == '__main__':
         directory = os.getcwd()
     print("Performing tests in ", directory)
 
+    # Get current branch
     current_branch = git_tools.get_current_branch(directory)
     print("\t- Got current GIT branch: {}".format(current_branch))
 
+    # Process history
     history = git_tools.get_git_history(root_directory=directory, branch=current_branch)
+    print("\t- Got GIT history")
+    file_history = git_tools.get_file_history(history)
+    print("\t- Got GIT file history")
+
+    # Test if printing to file
+    to_print = True
     if '--to-file' in sys.argv:
+        print("Writing JSON files")
         json.dump(history, open(home+'/git_history.json', 'w'), sort_keys=True, indent=2)
-        print("\t- Got GIT history")
-        json.dump(git_tools.get_file_history(history), open(home+'/git_file_history.json', 'w'), sort_keys=True, indent=2)
-        print("\t- Got GIT file history")
-    else:
+        json.dump(file_history, open(home+'/git_file_history.json', 'w'), sort_keys=True, indent=2)
+        to_print = False
+    if '--to-excel' in sys.argv:
+        print("Writing MS EXCEL files")
+        import pandas as pd
+        pd.DataFrame(history).to_excel(home+'/git_history.xlsx')
+        pd.DataFrame(file_history).T.reset_index(drop=True).to_excel(home+'/git_file_history.xlsx')
+        to_print = False
+    if '--to-csv' in sys.argv:
+        print("Writing CSV files")
+        import pandas as pd
+        pd.DataFrame(history).to_csv(home+'/git_history.csv', sep='\t')
+        pd.DataFrame(file_history).T.reset_index(drop=True).to_csv(home+'/git_file_history.csv', sep='\t')
+        to_print = False
+
+    # Test if printing to stdout
+    if to_print:
         pprint(history)
-        pprint(git_tools.get_file_history(history))
+        pprint(file_history)
