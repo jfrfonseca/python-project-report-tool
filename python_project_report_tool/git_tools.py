@@ -48,13 +48,33 @@ Date:   {}
 """
 
 
-def get_git_history(root_directory=None):
+def get_current_branch(root_directory=None):
     if root_directory is None:
         root_directory = os.getcwd()
     os.chdir(root_directory)
 
+    # We use GIT's function to retrieve the current branch name
+    p = subprocess.Popen(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    try:
+        branch = out.decode('string-escape').strip()
+    except:
+        branch = out.decode('utf-8').strip()
+
+    return branch
+
+
+def get_git_history(root_directory=None, branch=None):
+    if root_directory is None:
+        root_directory = os.getcwd()
+    os.chdir(root_directory)
+
+    # We retrieve the current branch for default
+    if branch is None:
+        branch = get_current_branch(root_directory)
+
     # Run the git command to get commits per filename in a subprocess and get the results, decoded
-    process = subprocess.Popen(['git', 'log', '--follow', '--name-only', root_directory], stdout=subprocess.PIPE)
+    process = subprocess.Popen(['git', 'log', branch, '--follow', '--name-only', '.'], stdout=subprocess.PIPE)
     out, err = process.communicate()
     try:
         out = out.decode('string-escape')
@@ -77,10 +97,7 @@ def get_git_history(root_directory=None):
     return history
 
 
-def get_file_history(git_history, root_directory=None):
-    if root_directory is None:
-        root_directory = os.getcwd()
-    os.chdir(root_directory)
+def get_file_history(git_history):
 
     history_per_file = {}
 
