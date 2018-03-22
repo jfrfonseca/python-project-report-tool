@@ -21,6 +21,7 @@ __version__    = ''
 
 # Standard Library
 import os
+import datetime
 import subprocess
 
 # PIP
@@ -43,9 +44,16 @@ Date:   {}
 ''')
 
 
+git_datetime_format = '%a %b %d %H:%M:%S %Y %z'
+
+
 """
 # UTIL
 """
+
+
+def parse_git_date(git_date):
+    return datetime.datetime.strptime(git_date, git_datetime_format)
 
 
 def get_current_branch(root_directory=None):

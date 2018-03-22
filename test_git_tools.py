@@ -23,10 +23,11 @@ __version__    = ''
 import os
 import sys
 import json
-from pprint import pprint, pformat
+from pprint import pprint
 
 # Project
 from python_project_report_tool import git_tools
+from python_project_report_tool import versioning_schema
 
 
 """
@@ -61,6 +62,12 @@ if __name__ == '__main__':
     print("\t- Got GIT history")
     file_history = git_tools.get_file_history(history)
     print("\t- Got GIT file history")
+    history_pairs = list(file_history.items())
+    versions_list = versioning_schema.constant__day__commit_count([record for file_name, record in history_pairs], '0')
+    for version, history_pair in zip(versions_list, history_pairs):
+        file_name, record = history_pair
+        file_history[file_name]['version'] = version
+    print("\t- Generated version numbers")
 
     # Test if printing to file
     to_print = True
