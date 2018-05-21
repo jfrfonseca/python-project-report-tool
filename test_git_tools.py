@@ -80,7 +80,13 @@ if __name__ == '__main__':
         print("Writing MS EXCEL files")
         import pandas as pd
         pd.DataFrame(history).to_excel(home+'/git_history.xlsx')
-        pd.DataFrame(file_history).T.reset_index(drop=True).to_excel(home+'/git_file_history.xlsx')
+        pd.DataFrame(file_history).T[[
+            'current', 'filename',
+            'last_update', 'version', 'commits',
+            'creation', 'maintainer', 'author', 'credits',
+            'path', 'file'
+        ]].sort_values(['current', 'path', 'filename']
+        ).to_excel(home+'/git_file_history.xlsx', index=None, encoding='latin-1')
         to_print = False
     if '--to-csv' in sys.argv:
         print("Writing CSV files")
