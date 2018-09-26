@@ -73,26 +73,28 @@ if __name__ == '__main__':
     to_print = True
     if '--to-file' in sys.argv:
         print("Writing JSON files")
-        json.dump(history, open(home+'/git_history.json', 'w'), sort_keys=True, indent=2)
-        json.dump(file_history, open(home+'/git_file_history.json', 'w'), sort_keys=True, indent=2)
+        json.dump(history, open(os.path.join(directory, 'git_history.json'), 'w'), sort_keys=True, indent=2)
+        json.dump(file_history, open(os.path.join(directory, 'git_file_history.json'), 'w'), sort_keys=True, indent=2)
         to_print = False
+
     if '--to-excel' in sys.argv:
         print("Writing MS EXCEL files")
         import pandas as pd
-        pd.DataFrame(history).to_excel(home+'/git_history.xlsx')
+        pd.DataFrame(history).to_excel(os.path.join(directory, 'git_history.xlsx'))
         pd.DataFrame(file_history).T[[
             'current', 'filename',
             'last_update', 'version', 'commits',
             'creation', 'maintainer', 'author', 'credits',
             'path', 'file'
         ]].sort_values(['current', 'path', 'filename']
-        ).to_excel(home+'/git_file_history.xlsx', index=None, encoding='latin-1')
+        ).to_excel(os.path.join(directory, 'git_file_history.xlsx'), index=None, encoding='latin-1')
         to_print = False
+
     if '--to-csv' in sys.argv:
         print("Writing CSV files")
         import pandas as pd
-        pd.DataFrame(history).to_csv(home+'/git_history.csv', sep='\t')
-        pd.DataFrame(file_history).T.reset_index(drop=True).to_csv(home+'/git_file_history.csv', sep='\t')
+        pd.DataFrame(history).to_csv(os.path.join(directory, 'git_history.csv'), sep='\t')
+        pd.DataFrame(file_history).T.reset_index(drop=True).to_csv(os.path.join(directory, 'git_file_history.csv'), sep='\t')
         to_print = False
 
     # Test if printing to stdout
