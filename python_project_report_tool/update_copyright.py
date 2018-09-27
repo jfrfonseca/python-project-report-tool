@@ -6,7 +6,7 @@
 """
 
 
-__copyright__  = ''
+__copyright__  = 'Copyright (c) 2018 José F. R. Fonseca'
 __credits__    = []
 __author__     = ''
 __maintainer__ = ''
@@ -20,7 +20,7 @@ __version__    = ''
 
 
 # Standard Library
-import fileinput
+import re
 
 
 """
@@ -28,10 +28,17 @@ import fileinput
 """
 
 
-def update_copyright_message(file_path, copyright_message, copyright_tag='__copyright__  = '):
+def update_copyright_message(file_path, copyright_message, copyright_tag_regex='__copyright__\s*=\s*', copyright_tag='__copyright__  = '):
+    rgx = re.compile(copyright_tag_regex)
 
-    for line in fileinput.input(file_path, inplace=True):
-        if line.startswith(copyright_tag):
-            line.replace(copyright_tag, copyright_tag + "'{}'".format(copyright_message))
+    with open(file_path, 'r') as fin:
+        indata = fin.readlines()
+
+    for i, line in enumerate(indata):
+        if rgx.search(line):
+            indata[i] = "{}'{}'\n".format(copyright_tag, copyright_message)
+            with open(file_path, 'w') as fout:
+                fout.writelines(indata)
             return True
+
     return False

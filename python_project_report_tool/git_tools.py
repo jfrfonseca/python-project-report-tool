@@ -6,7 +6,7 @@
 """
 
 
-__copyright__  = ''
+__copyright__  = 'Copyright (c) 2018 José F. R. Fonseca'
 __credits__    = []
 __author__     = ''
 __maintainer__ = ''

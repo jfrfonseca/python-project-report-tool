@@ -6,7 +6,7 @@
 """
 
 
-__copyright__  = ''
+__copyright__  = 'Copyright (c) 2018 José F. R. Fonseca'
 __credits__    = []
 __author__     = ''
 __maintainer__ = ''
@@ -52,7 +52,10 @@ if __name__ == '__main__':
     print("\t- Got GIT history")
     file_history = git_tools.get_file_history(history)
     print("\t- Got GIT file history")
-    for file in file_history:
-        if file['current']:
-            if file['filename'].endswith('.py'):
-                update_copyright.update_copyright_message(file['path'], copyright_message)
+    for filename, metadata in file_history.items():
+        if filename.endswith('.py'):
+            path = os.path.join(directory, metadata['file'])
+            if metadata['current'] and os.path.isfile(path):
+                updated = update_copyright.update_copyright_message(path, copyright_message)
+                if updated:
+                    print('Updated {} in {}'.format(filename, path))
