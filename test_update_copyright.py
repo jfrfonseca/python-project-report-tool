@@ -24,7 +24,7 @@ import os
 import sys
 
 # Project
-from python_project_report_tool import git_tools, update_copyright
+from python_project_report_tool import git_tools, update_meta_tags
 
 
 """
@@ -56,6 +56,6 @@ if __name__ == '__main__':
         if filename.endswith('.py'):
             path = os.path.join(directory, metadata['file'])
             if metadata['current'] and os.path.isfile(path):
-                updated = update_copyright.update_copyright_message(path, copyright_message)
+                updated = update_meta_tags.update_copyright_message(path, copyright_message)
                 if updated:
                     print('Updated {} in {}'.format(filename, path))
