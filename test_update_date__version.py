@@ -10,8 +10,8 @@ __copyright__  = 'Copyright (c) 2018 José F. R. Fonseca'
 __credits__    = []
 __author__     = ''
 __maintainer__ = ''
-__date__       = '27/09/2018 21:49:38'
-__version__    = '0.20180927.3'
+__date__       = ''
+__version__    = ''
 
 
 """
@@ -22,9 +22,11 @@ __version__    = '0.20180927.3'
 # Standard Library
 import os
 import sys
+import datetime
 
 # Project
 from python_project_report_tool import git_tools, update_meta_tags
+from python_project_report_tool.versioning_schema.constant__day__commit_count import __format_record__constant__day__commit_count
 
 
 """
@@ -36,12 +38,12 @@ if __name__ == '__main__':
     home = os.getcwd()
     if len(sys.argv) > 2:
         directory = sys.argv[1]
-        copyright_message = sys.argv[2]
+        major_version = sys.argv[2]
     else:
         directory = os.getcwd()
-        copyright_message = sys.argv[1]
+        major_version = sys.argv[1]
     print("Performing tests in ", directory)
-    print("Copyright message: {}".format(copyright_message))
+    print("Major version: {}".format(major_version))
 
     # Get current branch
     current_branch = git_tools.get_current_branch(directory)
@@ -56,6 +58,16 @@ if __name__ == '__main__':
         if filename.endswith('.py'):
             path = os.path.join(directory, metadata['file'])
             if metadata['current'] and os.path.isfile(path):
-                updated = update_meta_tags.update_copyright_message(path, copyright_message)
-                if updated:
-                    print('Updated {} in {}'.format(filename, path))
+
+                date = git_tools.parse_git_date(metadata['last_update'])
+                if date.date() != datetime.date.today():
+
+                    date = date.strftime("%d/%m/%Y %H:%M:%S")
+                    updated = update_meta_tags.update_date(path, date)
+                    if updated:
+                        print('Updated date {} in {}'.format(filename, path))
+
+                    version = __format_record__constant__day__commit_count(metadata, major_version)
+                    updated = update_meta_tags.update_version(path, version)
+                    if updated:
+                        print('Updated version {} in {}'.format(filename, path))

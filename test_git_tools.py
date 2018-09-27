@@ -10,8 +10,8 @@ __copyright__  = 'Copyright (c) 2018 José F. R. Fonseca'
 __credits__    = []
 __author__     = ''
 __maintainer__ = ''
-__date__       = ''
-__version__    = ''
+__date__       = '27/09/2018 21:24:04'
+__version__    = '0.20180927.9'
 
 
 """
