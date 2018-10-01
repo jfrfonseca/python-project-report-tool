@@ -105,9 +105,22 @@ def get_git_history(root_directory=None, branch=None):
     return history
 
 
+def get_changed_files(root_directory=None):
+    if root_directory is None:
+        root_directory = os.getcwd()
+    # os.chdir(root_directory)
+
+    # Get all the files that were changed since the last commit
+    out = subprocess.check_output(['git', 'diff'], cwd=root_directory)
+    changed_files = set([f.strip() for f in out.splitlines()])
+
+    return changed_files
+
+
 def get_file_history(git_history):
 
     history_per_file = {}
+    changed_files = get_changed_files()
 
     # For each commit in the history
     for commit in git_history:
@@ -134,7 +147,8 @@ def get_file_history(git_history):
                     'last_update': commit['date'],
                     'creation': commit['date'],
                     'commits': 1,
-                    'current': (os.path.exists(file) == 1)
+                    'current': (os.path.exists(file) == 1),
+                    'changed': file in changed_files
                 }
 
     return history_per_file

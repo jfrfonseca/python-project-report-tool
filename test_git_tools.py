@@ -60,6 +60,10 @@ if __name__ == '__main__':
     # Process history
     history = git_tools.get_git_history(root_directory=directory, branch=current_branch)
     print("\t- Got GIT history")
+    changed_files = git_tools.get_changed_files(root_directory=directory)
+    print("\t- Got GIT changed files:")
+    for f in sorted(list(changed_files)):
+        print('\t\t- {}'.format(f))
     file_history = git_tools.get_file_history(history)
     print("\t- Got GIT file history")
     history_pairs = list(file_history.items())
@@ -82,7 +86,7 @@ if __name__ == '__main__':
         import pandas as pd
         pd.DataFrame(history).to_excel(os.path.join(directory, 'git_history.xlsx'))
         pd.DataFrame(file_history).T[[
-            'current', 'filename',
+            'current', 'changed', 'filename',
             'last_update', 'version', 'commits',
             'creation', 'maintainer', 'author', 'credits',
             'path', 'file'
