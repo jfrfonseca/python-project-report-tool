@@ -74,3 +74,21 @@ def update_version(file_path, version, version_tag_regex='__version__\s*=\s*', v
             return True
 
     return False
+
+
+def update_headers(file_path, headers="#!/usr/bin/env python\n# -*- coding: UTF-8 -*-\n"):
+    if isinstance(headers, list):
+        headers = '\n'.join(headers)
+
+    with open(file_path, 'r+', encoding='utf-8', errors='ignore') as f:
+        lines = f.readlines()
+        f.seek(0)
+
+        if not f.read().startswith(headers):
+            f.seek(0)
+            f.write(headers)
+            for line in lines:
+                f.write(line)
+            return True
+
+    return False
