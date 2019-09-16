@@ -20,6 +20,7 @@ __version__    = '0.20180927.7'
 
 
 # Standard Library
+import re
 import os
 import datetime
 import subprocess
@@ -112,21 +113,63 @@ def get_changed_files(root_directory=None):
 
     # Get all the files that were changed since the last commit
     out = subprocess.check_output(['git', 'diff', '--name-only'], cwd=root_directory)
+    try:
+        out = out.decode('string-escape')
+    except:
+        out = out.decode('utf-8')
     changed_files = set([f.strip() for f in out.splitlines()])
 
     return changed_files
 
 
-def get_changes(root_directory=None):
+def get_current_changes(root_directory=None):
     if root_directory is None:
         root_directory = os.getcwd()
     # os.chdir(root_directory)
 
     # Get all the files that were changed since the last commit
     out = subprocess.check_output(['git', 'diff'], cwd=root_directory)
-    changed_files = set([f.strip() for f in out.splitlines()])
+    try:
+        out = out.decode('string-escape')
+    except:
+        out = out.decode('utf-8')
+    changes = out.splitlines()
 
-    return changed_files
+    return changes
+
+
+def get_last_commit_changes(root_directory=None, group=False, exclude_prefixes=None):
+    if root_directory is None:
+        root_directory = os.getcwd()
+    # os.chdir(root_directory)
+
+    # Get all the files that were changed in the the last commit
+    out = subprocess.check_output(['git', 'diff', 'HEAD', 'HEAD~1'], cwd=root_directory)
+    try:
+        out = out.decode('string-escape')
+    except:
+        out = out.decode('utf-8')
+    last_commit_changes = out.splitlines()
+
+    # Remove the excluded prefixes
+    if exclude_prefixes is not None:
+        last_commit_changes = [l for l in last_commit_changes if not any([l.startswith(k) for k in exclude_prefixes])]
+
+    # If not to group the changes, return now
+    if not group:
+        return last_commit_changes
+
+    # Group the changes per file
+    new_file_changed_regex = re.compile(r'diff --git a/(.+) b/(\1)')
+    grouped_changes = []
+    for line in last_commit_changes:
+        if new_file_changed_regex.match(line.strip()):
+            grouped_changes.append([line])
+        else:
+            grouped_changes[-1].append(line)
+
+    # Return grouped
+    return grouped_changes
 
 
 def get_file_history(git_history):
