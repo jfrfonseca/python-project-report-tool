@@ -28,7 +28,7 @@ import re
 """
 
 
-def update_copyright_message(file_path, copyright_message, copyright_tag_regex='__copyright__\s*=\s*', copyright_tag='__copyright__  = '):
+def update_copyright_message(file_path, copyright_message, copyright_tag_regex='__copyright__\s*=\s*', copyright_tag='__copyright__  = ', simulate=False):
     rgx = re.compile(copyright_tag_regex)
 
     with open(file_path, 'r') as fin:
@@ -37,14 +37,15 @@ def update_copyright_message(file_path, copyright_message, copyright_tag_regex='
     for i, line in enumerate(indata):
         if rgx.search(line):
             indata[i] = "{}'{}'\n".format(copyright_tag, copyright_message)
-            with open(file_path, 'w') as fout:
-                fout.writelines(indata)
+            if not simulate:
+                with open(file_path, 'w') as fout:
+                    fout.writelines(indata)
             return True
 
     return False
 
 
-def update_date(file_path, date, date_tag_regex='__date__\s*=\s*', date_tag='__date__       = '):
+def update_date(file_path, date, date_tag_regex='__date__\s*=\s*', date_tag='__date__       = ', simulate=False):
     rgx = re.compile(date_tag_regex)
 
     with open(file_path, 'r') as fin:
@@ -53,14 +54,15 @@ def update_date(file_path, date, date_tag_regex='__date__\s*=\s*', date_tag='__d
     for i, line in enumerate(indata):
         if rgx.search(line):
             indata[i] = "{}'{}'\n".format(date_tag, date)
-            with open(file_path, 'w') as fout:
-                fout.writelines(indata)
+            if not simulate:
+                with open(file_path, 'w') as fout:
+                    fout.writelines(indata)
             return True
 
     return False
 
 
-def update_version(file_path, version, version_tag_regex='__version__\s*=\s*', version_tag='__version__    = '):
+def update_version(file_path, version, version_tag_regex='__version__\s*=\s*', version_tag='__version__    = ', simulate=False):
     rgx = re.compile(version_tag_regex)
 
     with open(file_path, 'r') as fin:
@@ -69,14 +71,15 @@ def update_version(file_path, version, version_tag_regex='__version__\s*=\s*', v
     for i, line in enumerate(indata):
         if rgx.search(line):
             indata[i] = "{}'{}'\n".format(version_tag, version)
-            with open(file_path, 'w') as fout:
-                fout.writelines(indata)
+            if not simulate:
+                with open(file_path, 'w') as fout:
+                    fout.writelines(indata)
             return True
 
     return False
 
 
-def update_headers(file_path, headers="#!/usr/bin/env python\n# -*- coding: UTF-8 -*-\n"):
+def update_headers(file_path, headers="#!/usr/bin/env python\n# -*- coding: UTF-8 -*-\n", simulate=False):
     if isinstance(headers, list):
         headers = '\n'.join(headers)
 
@@ -86,9 +89,11 @@ def update_headers(file_path, headers="#!/usr/bin/env python\n# -*- coding: UTF-
 
         if not f.read().startswith(headers):
             f.seek(0)
-            f.write(headers)
+            if not simulate:
+                f.write(headers)
             for line in lines:
-                f.write(line)
+                if not simulate:
+                    f.write(line)
             return True
 
     return False

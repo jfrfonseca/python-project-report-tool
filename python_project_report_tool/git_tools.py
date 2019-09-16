@@ -111,6 +111,18 @@ def get_changed_files(root_directory=None):
     # os.chdir(root_directory)
 
     # Get all the files that were changed since the last commit
+    out = subprocess.check_output(['git', 'diff', '--name-only'], cwd=root_directory)
+    changed_files = set([f.strip() for f in out.splitlines()])
+
+    return changed_files
+
+
+def get_changes(root_directory=None):
+    if root_directory is None:
+        root_directory = os.getcwd()
+    # os.chdir(root_directory)
+
+    # Get all the files that were changed since the last commit
     out = subprocess.check_output(['git', 'diff'], cwd=root_directory)
     changed_files = set([f.strip() for f in out.splitlines()])
 
