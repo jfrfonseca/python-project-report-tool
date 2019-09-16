@@ -37,6 +37,7 @@ if __name__ == '__main__':
     home = os.getcwd()
     if len(sys.argv) > 2:
         directory_list = sys.argv[1]
+        print('Directory List: {}'.format(directory_list))
         if not os.path.exists(directory_list):
             directory_list = glob.glob(directory_list)
             directory_list = [d for d in directory_list if os.path.isdir(d)]
@@ -49,12 +50,15 @@ if __name__ == '__main__':
 
     print('Directories to perform tests on: {}'.format(directory_list))
 
-    for directory in directory_list:
-        print("Performing tests in ", directory)
-        print("Copyright message: {}".format(copyright_message))
+    for i, directory in enumerate(directory_list):
+        print("({}/{}) Performing tests in {}".format(i+1, len(directory_list), directory))
+        print("({}/{}) Copyright message: {}".format(i+1, len(directory_list), copyright_message))
 
         # Get current branch
         current_branch = git_tools.get_current_branch(directory)
+        if current_branch == '':
+            print("\t- Not a GIT repository (no-branch). Skipping...")
+            continue
         print("\t- Got current GIT branch: {}".format(current_branch))
 
         # Process history
@@ -68,4 +72,4 @@ if __name__ == '__main__':
                 if metadata['current'] and os.path.isfile(path):
                     updated = update_meta_tags.update_copyright_message(path, copyright_message)
                     if updated:
-                        print('Updated {} in {}'.format(filename, path))
+                        print('\t- Updated {} in {}'.format(filename, path))
