@@ -45,15 +45,16 @@ def update_copyright_message(file_path, copyright_message, copyright_tag_regex='
     return False
 
 
-def update_date(file_path, date, date_tag_regex='__date__\s*=\s*', date_tag='__date__       = ', simulate=False):
+def update_date(file_path, date, date_tag_regex='__date__\s*=\s*', date_tag='__date__       = ', simulate=False, date_format='%d/%m/%Y %H:%M:%S'):
     rgx = re.compile(date_tag_regex)
+    formatted_date = date.strftime(date_format)
 
     with open(file_path, 'r') as fin:
         indata = fin.readlines()
 
     for i, line in enumerate(indata):
         if rgx.search(line):
-            indata[i] = "{}'{}'\n".format(date_tag, date)
+            indata[i] = "{}'{}'\n".format(date_tag, formatted_date)
             if not simulate:
                 with open(file_path, 'w') as fout:
                     fout.writelines(indata)
