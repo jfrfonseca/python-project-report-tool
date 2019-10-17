@@ -53,6 +53,13 @@ git_datetime_format = '%a %b %d %H:%M:%S %Y %z'
 """
 
 
+def rem_equal(value):
+    value = str(value).strip()
+    while value.startswith('='):
+        value = value[1:]
+    return value
+
+
 def parse_git_date(git_date):
     return datetime.datetime.strptime(git_date, git_datetime_format)
 
@@ -95,9 +102,9 @@ def get_git_history(root_directory=None, branch=None):
     for commit in commit_report_pattern.findall(out+'\n'):
         history.append({
             "commit": str(hex(commit[0])),
-            "author": commit[1],
-            "date": commit[2],
-            "message": commit[3],
+            "author": rem_equal(commit[1]),
+            "date": rem_equal(commit[2]),
+            "message": rem_equal(commit[3]),
             "files": commit[4].splitlines()
         })
 
