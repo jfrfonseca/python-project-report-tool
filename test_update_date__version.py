@@ -67,8 +67,8 @@ if __name__ == '__main__':
         ignore_regex = re.compile(ignore_regex)
         print('File name RegEx to ignore: {}'.format(ignore_regex))
 
-    only_changes = '--only-changes' in sys.argv
-    if only_changes:
+    only_last_commit_changes = '--only-last-commit-changes' in sys.argv
+    if only_last_commit_changes:
         print('Considering only files changed since last commit')
 
     for i, directory in enumerate(directory_list):
@@ -128,20 +128,25 @@ if __name__ == '__main__':
 
         # Filter file history selecting only valid files
         valid_file_history = {}
+        validations = []
         for filename, metadata in file_history.items():
             if filename.endswith('.py'):
                 if (ignore_regex is not None) and (ignore_regex.match(filename)):
                     continue
                 path = os.path.join(directory, metadata['file'])
-                if all([
+                val = [
                     metadata['current'],
-                    metadata['changed'] or only_changes,
+                    (metadata['changed'] and only_last_commit_changes) or (not only_last_commit_changes),
                     os.path.isfile(path),
                     filename not in mode_only_changes,
                     filename not in metatag_only_changes
-                ]):
+                ]
+                if all(val):
                     valid_file_history[filename] = metadata
+                validations.append('{} - {}'.format(''.join([str(int(v)) for v in val]), filename))
         print("\t- Got GIT valid file history ({} valid files)".format(len(valid_file_history)))
+        if '--print-validations' in sys.argv:
+            print('\n\t\t- '+'\n\t\t- '.join(sorted(validations)))
 
         # Iterate only the valid files
         for filename, metadata in valid_file_history.items():
