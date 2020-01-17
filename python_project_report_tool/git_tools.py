@@ -173,7 +173,8 @@ def get_last_commit_changes(root_directory=None, group=False, exclude_prefixes=N
         if new_file_changed_regex.match(line.strip()):
             grouped_changes.append([line])
         else:
-            grouped_changes[-1].append(line)
+            if len(grouped_changes) > 0:
+                grouped_changes[-1].append(line)
 
     # Return grouped
     return grouped_changes
